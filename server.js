@@ -8,17 +8,8 @@ mongoose.set("strictQuery", false);
 const app = express();
 const Schema = mongoose.Schema;
 
-const modelOfStation = new Schema(
-  {
-    id_borne: modelOfBorne.id_borne,
-    nb_bornes: Number,
-    localisation: { lat:Number, long: Number, code_postal: Number},
-    horaire: {ouverture: Date, fermeture: Date},
-    autoroute: Number,
-  }
-)
 
-const modelOfBorne = new Schema(
+const modelOfBorneSchema = new Schema(
   {
     id_borne: Number,
     puissance_max: Number, //en kW
@@ -26,15 +17,35 @@ const modelOfBorne = new Schema(
     vitesse_borne: String, //TODO resteindre la vitesse a lent, normale, rapide
   }
 )
-const modelOfCar = new Schema(
+const modelOfBorne = mongoose.model('modelOfBorne', modelOfBorneSchema);
+
+const modelOfStationSchema = new Schema(
+  {
+    id_borne: [{  
+      type: Schema.Types.ObjectId,
+      ref: modelOfBorne.id_borne,
+    }],
+    nb_bornes: Number,
+    localisation: { lat:Number, long: Number, code_postal: Number},
+    horaire: {ouverture: Date, fermeture: Date},
+    autoroute: Number,
+  }
+)
+const modelOfStation = mongoose.model('modelOfStation', modelOfStationSchema);
+
+const modelOfCarSchema = new Schema(
   {
     marque: String,
     modele: String,
     puissance_moteur: Number,
     batterie: Number,
-    charge_compatible: [modelOfBorne]
+    charge_compatible: [{
+      type: Schema.Types.ObjectId,
+      ref: modelOfBorne,
+    }]
   }
 )
+const modelOfCar = mongoose.model('modelOfCar', modelOfCarSchema);
 
 app.use(express.static('public'));
 app.use('/public', serveIndex('public', {'icons': true}));
@@ -49,4 +60,4 @@ function checkAuthenticated(req, res, next) {
   }
 }
 
-app.listen(3000, () => console.log('Server is running on port 3000'));
+app.listen(3000, () => console.log('Server is running at http://localhost:3000'));
