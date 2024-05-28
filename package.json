@@ -1,0 +1,19 @@
+{
+  "name": "binary2dex2hex",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mogodb": "^0.0.1-security",
+    "mongoose": "^8.4.0",
+    "nodemon": "^3.1.0",
+    "serve-index": "^1.9.1"
+  }
+}
