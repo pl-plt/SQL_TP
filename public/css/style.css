@@ -4,6 +4,7 @@ body {
 }
 
 .main {
+    position: relative;
     background-color: #FFFFFF;
     width: 600px;
     height: 600px;
@@ -21,26 +22,28 @@ body {
 }
 
 .un {
-width: 76%;
-color: rgb(38, 50, 56);
-font-weight: 700;
-font-size: 14px;
-letter-spacing: 1px;
-background: rgba(136, 126, 126, 0.04);
-padding: 10px 20px;
-border: none;
-border-radius: 20px;
-outline: none;
-box-sizing: border-box;
-border: 2px solid rgba(0, 0, 0, 0.02);
-margin-top: 50px;
-margin-bottom: 20px;
-margin-left: 72px;
-text-align: center;
-font-family: 'Ubuntu', sans-serif;
+    width: 76%;
+    color: rgb(38, 50, 56);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: rgba(136, 126, 126, 0.04);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    box-sizing: border-box;
+    border: 2px solid rgba(0, 0, 0, 0.02);
+    margin-top: 50px;
+    margin-bottom: 20px;
+    margin-left: 72px;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
 }
+
 textarea.un {
-    
+    margin: 0px;
+    margin-top: 30px;
     height: 400px;
     width: 456px;
     resize: none;
@@ -48,7 +51,7 @@ textarea.un {
 
 .radio_btn {
     text-align: center;
-    margin-left:auto;
+    margin-left: auto;
     color: rgb(38, 50, 56);
     font-weight: 700;
     font-size: 15px;
@@ -56,12 +59,13 @@ textarea.un {
 }
 
 .form1 {
-    align-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .un:focus, .pass:focus {
     border: 2px solid rgba(0, 0, 0, 0.18) !important;
-    
 }
 
 .submit {
@@ -75,15 +79,24 @@ textarea.un {
     padding-bottom: 10px;
     padding-top: 10px;
     font-family: 'Ubuntu', sans-serif;
-    margin-left: 228px ;
     font-size: 18px;
     box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+    align-self: center;
+}
+
+.submit:hover, .submit:focus {
+    background: linear-gradient(to right, #E040FB, #9C27B0);
+    box-shadow: 0 0 25px 5px rgba(0, 0, 0, 0.2);
 }
 
 a {
     text-shadow: 0px 0px 3px rgba(117, 117, 117, 0.12);
     color: #E1BEE7;
-    text-decoration: none
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    color: #9C27B0;
 }
 
 .results {
@@ -96,11 +109,47 @@ a {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
+}
 
+.boutons {
+    position: absolute;
+    top: 308px;
+    right: 20px; 
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+.boutons button {
+    cursor: pointer;
+    border-radius: 1em;
+    color: #fff;
+    background: linear-gradient(to right, #9C27B0, #E040FB);
+    border: 0;
+    padding: 10px 20px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+}
+
+.boutons button:hover, .boutons button:focus {
+    background: linear-gradient(to right, #E040FB, #9C27B0);
+    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 600px) {
     .main {
-        border-radius: 0px;
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+    .un, .submit {
+        width: 90%;
+        margin-left: 5%;
+    }
+    .sign {
+        font-size: 18px;
     }
 }
