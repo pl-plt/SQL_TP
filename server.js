@@ -54,9 +54,22 @@ app.get('/', (req, res) => {
   res.sendFile('/index.html');
 });
 
+app.post('/', checkNotAuthenticated, passport.authenticate('local', {
+  successRedirect: '/app',
+  failureRedirect: '/',
+  failureFlash: true
+}))
+
+app.get('/app', checkAuthenticated, (req, res) => {
+  res.sendFile('app.html')
+})
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return res.redirect('/'+next)
+    next()
+  }
+  else {
+    res.redirect("/")
   }
 }
 
