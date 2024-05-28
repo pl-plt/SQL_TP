@@ -39,6 +39,12 @@ margin-left: 72px;
 text-align: center;
 font-family: 'Ubuntu', sans-serif;
 }
+textarea.un {
+    
+    height: 400px;
+    width: 456px;
+    resize: none;
+}
 
 .radio_btn {
     text-align: center;
@@ -69,7 +75,7 @@ font-family: 'Ubuntu', sans-serif;
     padding-bottom: 10px;
     padding-top: 10px;
     font-family: 'Ubuntu', sans-serif;
-    margin-left: 35%;
+    margin-left: 228px ;
     font-size: 18px;
     box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
 }
