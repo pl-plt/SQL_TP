@@ -126,7 +126,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/app', checkAuthenticated, (req, res) => {
-  res.sendFile('/app.html')
+  res.sendFile(__dirname+'/public'+'/app.html')
 })
 
 // app.post('/', checkNotAuthenticated, passport.authenticate('local', {
