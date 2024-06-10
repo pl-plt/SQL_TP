@@ -1,9 +1,20 @@
+document.getElementById("queryForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const query = document.getElementById("query").value;
 
+    const response = await fetch('/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: query })
+    });
+    const result = await response.json();
+    document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+    });
 
 function verify_user_not_in_DB() {
     const user = document.getElementById("username").value; // Declare the user object with a unique identifier
-
-    console.log("test")
 
     // Assuming you have a user object with a unique identifier
     if (user) {
@@ -48,6 +59,7 @@ function check_password_the_same() {
 }
 
 function writeRequest(request) {
-    const requestToSubmit = document.getElementById("dbRequest");
+    const requestToSubmit = document.getElementById("query");
     requestToSubmit.value = request;
 }
+

@@ -12,7 +12,7 @@ mongoose.set("strictQuery", false);
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
 app.use(flash())
 
 app.use(session({
@@ -106,6 +106,18 @@ app.post('/', checkNotAuthenticated, passport.authenticate('local', {
   failureFlash: true
 }));
 
+app.post('/query', async (req, res) => {
+  const { query } = req.body;
+
+  try {
+    const parsedQuery = JSON.parse(query);
+    const result = await mongoose.connection.db.command(parsedQuery);
+    res.json({ success: true, result: result });
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).json({ success: false, message: 'Error executing query' });
+  }
+});
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     next()
