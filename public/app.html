@@ -8,16 +8,20 @@
     <div class="main">
         <a class="sign" style="display:block;margin-left: 137px;">Sujet de projet BD relationnelle</a>
         <form class="form1" action="/app" method="post">
-            <textarea class= "un" type="text" placeholder="type request" maxlength="800"></textarea>
+            <textarea id="dbRequest" class="un" type="text" placeholder="type request" maxlength="800"></textarea>
             <button class="submit" type="submit" style="margin-top: 30px;">SUBMIT</button>
         </form>
+        <br>
+        <div style="display:block; text-align: center;" >
+            <a>Resultat</a>
     </div>
     <div class="boutons">
-        <button class="submit" type="submit"> 1 </button>
+        <button class="submit" type="submit" onclick="writeRequest('TEST')"> Ecrire test </button>
         <button class="submit" type="submit"> 2 </button>
         <button class="submit" type="submit"> 3 </button>
         <button class="submit" type="submit"> 4 </button>
         <button class="submit" type="submit"> 5 </button>
     </div>
+    <script src="js/script.js"></script>
 </body>
 </html>

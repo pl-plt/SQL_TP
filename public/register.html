@@ -7,16 +7,20 @@
 <body>
     <div class="main">
         <a class="sign" style="display:block;text-align: center;">REGISTER</a>
+        <br>
+        <a id="error_register" style="color: red; display: block; text-align: center; font-size: x-large;"></a>
         <form class="form1" action="/register" method="post">
-            <input class="un" type="text" name="username" type="text" placeholder="type your username here">
-            <input class="un" type="password" name="password" placeholder="type your password here">
-            <input class="un" type="password" name="password_verify" placeholder="Verify your password here">
-            <button class="submit" type="submit">SUBMIT</button>
+            <input class="un" type="text" name="username" id="username" type="text" placeholder="type your username here">
+            <input class="un" type="password" name="password" id="password" placeholder="type your password here" onkeyup="check_password_the_same()">
+            <input class="un" type="password" name="password_verify" id="password_verify" placeholder="Verify your password here" onkeyup="check_password_the_same()">
+            <button class="submit" type="submit" id="submit_button" onclick="verify_user_not_in_DB()">SUBMIT</button>
         </form>
         <br>
+        <button onclick="verify_user_not_in_DB()">VERIFY</button>
         <div style="display:block; text-align: center;" >
-            <a style="color: blueviolet;"" href="/">Login</a>
+            <a style="color: blueviolet;" href="/">Login</a>
         </div>
     </div>
+    <script src="js/script.js"></script>
 </body>
 </html>

@@ -6,13 +6,12 @@ const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const flash = require('connect-flash');
-
+const User = require('./user');
 mongoose.set("strictQuery", false);
 
 
 const app = express();
-const Schema = mongoose.Schema;
-
+app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(flash())
 
@@ -34,55 +33,6 @@ mongoose.connect('mongodb://localhost:27017/DatabaseVoitureElec', {
   console.error('Failed to connect to MongoDB', err);
 });
 
-
-// Schema creation
-
-const modelOfBorneSchema = new Schema(
-  {
-    id_borne: Number,
-    puissance_max: Number, //en kW
-    type_de_prise: [String], //TODO limiter le nb de type de prise possible
-    vitesse_borne: String, //TODO resteindre la vitesse a lent, normale, rapide
-  }
-)
-const modelOfBorne = mongoose.model('modelOfBorne', modelOfBorneSchema);
-
-const modelOfStationSchema = new Schema(
-  {
-    id_borne: [{  
-      type: Schema.Types.ObjectId,
-      ref: modelOfBorne.id_borne,
-    }],
-    nb_bornes: Number,
-    localisation: { lat:Number, long: Number, code_postal: Number},
-    horaire: {ouverture: Date, fermeture: Date},
-    autoroute: Number,
-  }
-);
-const modelOfStation = mongoose.model('modelOfStation', modelOfStationSchema);
-
-const modelOfCarSchema = new Schema(
-  {
-    marque: String,
-    modele: String,
-    puissance_moteur: Number,
-    batterie: Number,
-    charge_compatible: [{
-      type: Schema.Types.ObjectId,
-      ref: modelOfBorne,
-    }]
-  }
-);
-const modelOfCar = mongoose.model('modelOfCar', modelOfCarSchema);
-
-const userSchema = new Schema({
-  username: String,
-  password: String,
-});
-const User = mongoose.model('User', userSchema);
-
-// End of schema creation
-
 // Login
 
 passport.use(new LocalStrategy(
@@ -100,6 +50,7 @@ passport.use(new LocalStrategy(
       }
       return done(null, user);
     } catch (err) {
+      console.log("Error while logging in")
       return done(err);
     }
   }
@@ -122,18 +73,12 @@ app.use(express.static('public'));
 app.use('/public', serveIndex('public', {'icons': true}));
 
 app.get('/', (req, res) => {
-  res.sendFile('/index.html');
+  res.sendFile(__dirname+'/public'+'/index.html');
 });
 
 app.get('/app', checkAuthenticated, (req, res) => {
   res.sendFile(__dirname+'/public'+'/app.html')
 })
-
-// app.post('/', checkNotAuthenticated, passport.authenticate('local', {
-//   successRedirect: '/app',
-//   failureRedirect: '/',
-//   failureFlash: true
-// }))
 
 app.get('/register', (req, res) => {
   res.sendFile(__dirname+'/public'+'/register.html');
@@ -147,17 +92,17 @@ app.post('/register', async (req, res) => {
       password: hashedPassword
     });
     await user.save();
-    console.log('redirection sur login')
+    console.log('User added, redirecting to login page...')
     res.redirect('/');
   } catch (err) {
-    console.log('Erreur, redirection sur register')
+    console.log('/!\ Error, redirecting to register page...')
     res.redirect('/register');
   }
 });
 
 app.post('/', checkNotAuthenticated, passport.authenticate('local', {
   successRedirect: '/app',
-  failureRedirect: '/register',
+  failureRedirect: '/',
   failureFlash: true
 }));
 
@@ -178,3 +123,5 @@ function checkNotAuthenticated(req, res, next) {
 }
 
 app.listen(3000, () => console.log('Server is running at http://localhost:3000'));
+
+module.exports = mongoose.connection;
