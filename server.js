@@ -118,6 +118,8 @@ app.post('/query', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error executing query' });
   }
 });
+
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     next()

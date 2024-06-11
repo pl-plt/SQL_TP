@@ -15,8 +15,9 @@ const modelOfBorne = mongoose.model('modelOfBorne', modelOfBorneSchema);
   
 const modelOfStationSchema = new Schema(
     {
+      id_station: Number,
       id_borne: [{  
-        type: Schema.Types.ObjectId,
+        type: Number,
         ref: 'modelOfBorne',
       }],
       nb_bornes: Number,
@@ -34,7 +35,7 @@ const modelOfCarSchema = new Schema(
       puissance_moteur: Number,
       batterie: Number,
       charge_compatible: [{
-        type: Schema.Types.ObjectId,
+        type: Number,
         ref: 'modelOfBorne',
       }]
     }

@@ -8,7 +8,7 @@
     <div class="main">
         <a class="sign" style="display:block;margin-left: 137px;">Sujet de projet BD relationnelle</a>
         <form id="queryForm" class="form1" action="/query" method="post">
-            <textarea name="query" id="query" class="un" type="text" placeholder="type request" maxlength="800"></textarea>
+            <textarea name="query" id="query" class="un" type="text" placeholder="Entrez votre requête" maxlength="800"></textarea>
             <button class="submit" type="submit" style="margin-top: 30px;">SUBMIT</button>
         </form>
         <br>
@@ -20,12 +20,53 @@
         </div>
     </div>
     <div class="boutons">
-        <button class="submit" type="submit" onclick='writeRequest("{ \"find\": \"modelofcars\", \"filter\": { \"marque\": \"Tesla\" } }")'> Find all Tesla models </button>
-        <button class="submit" type="submit"> 2 </button>
-        <button class="submit" type="submit"> 3 </button>
-        <button class="submit" type="submit"> 4 </button>
-        <button class="submit" type="submit"> 5 </button>
+        <button class="submit" type="submit" onclick='writeRequest(teslaQuery)'> Selectionner toutes les Tesla  </button>
+        <button class="submit" type="submit" onclick='writeRequest(filterBorne)'>Stations du 75 <br>avec des bornes de type1</button>
+        <button class="submit" type="submit" onclick='writeRequest(q1)'> Question 1 </button>
+        <button class="submit" type="submit" onclick="writeRequest(q2)"> Question 2 </button>
+        <button class="submit" type="submit" onclick="writeRequest(q3)"> Question 3 </button>
+        <button class="submit" type="submit" onclick="writeRequest(q4)"> Question 4 </button>
+        <button class="submit" type="submit" onclick="writeRequest(q5)"> Question 5 </button>
     </div>
     <script src="js/script.js"></script>
+    <script>
+        // Traduction des requetes SQL en appel mongoDB au format json
+        /*
+        * 1. Trouver tous les modèles de voitures de la marque Tesla
+        SELECT * FROM modelofcars WHERE marque = 'Tesla';
+        { "find": "modelofcars", "filter": { "marque": "Tesla" } }
+
+        * 2. Trouver les stations de recharge du département 75 avec des bornes de type 1
+        SELECT * FROM modelofstations WHERE code_postal = 75 AND _id IN (SELECT id_station FROM borne WHERE type_de_prise = 'Type1');
+        {"aggregate": "modelofstations","pipeline": [{"$match": { "localisation.code_postal": 75 }},{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$match": { "bornes.type_de_prise": "Type1" }},{"$group": { "_id": "$_id" }}],"cursor": {}};
+
+        * Q1. Trouver les modèles de voitures dont la batterie est supérieure à 50kWh
+        SELECT marque, modele FROM modelofcars WHERE batterie_kw > 50;
+        { "find": "modelofcars",  "filter": { "batterie": { "$gt": 50 } },  "projection": { "marque": 1, "modele": 1 }}
+
+        * Q2. Trouver les bornes de recharge d'une station donnée
+        SELECT bornes.* FROM modelofstations ms JOIN modelofbornes bornes ON ms.id_borne = bornes.id_borne WHERE ms.id_station = 1;
+        { "aggregate": "modelofstations", "pipeline": [{ "$match": { "id_station": 1 } }, { "$lookup": { "from": "modelofbornes", "localField": "id_borne", "foreignField": "id_borne", "as": "bornes" } }, { "$unwind": "$bornes" }, { "$project": { "bornes": 1, "_id": 0 } }], "cursor": {} }        
+        
+        * Q3. Trouver des stations ayant au moins une borne compatible avec une Tesla modèle 3
+        SELECT * FROM modelofstations WHERE _id IN (SELECT station_id FROM modelofbornes WHERE type_de_prise IN ('Type2', 'combo CSS1'));
+        {"aggregate": "modelofstations","pipeline": [{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$match": {"bornes.type_de_prise": {"$in": ["Type2", "combo CSS1"]}}},{"$group": {"_id": "$_id","station_id": {"$first": "$_id"},"nb_bornes": {"$first": "$nb_bornes"},"localisation": {"$first": "$localisation"},"horaire": {"$first": "$horaire"},"autoroute": {"$first": "$autoroute"},"bornes": {"$push": "$bornes"}}}],"cursor": {}};
+
+        * Q4. Trouver le nombre de bornes de recharge par station dans les départements 75, 77, 91, 92, 93, 94, 95
+        SELECT COUNT(*) AS nombre_bornes FROM modelofbornes WHERE id_station IN (SELECT _id FROM modelofstations WHERE code_postal IN (75, 77, 91, 92, 93, 94, 95)) GROUP BY id_station;
+        {"aggregate": "modelofstations","pipeline": [{"$match": {"localisation.code_postal": {"$in": [75, 77, 91, 92, 93, 94, 95]}}},{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$group": {"_id": "$_id","nombre_bornes": {"$sum": 1}}}], "cursor": {}};
+        
+        * Q5. a
+        SELECT COUNT(*) AS nombre_bornes FROM borne WHERE id_station IN (SELECT _id FROM modelofstations) GROUP BY SUBSTR(code_postal, 0, 2) ORDER BY nombre_bornes DESC LIMIT 1;
+        {"aggregate": "modelofstations","pipeline": [{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$group": {"_id": {"$substr": ["$localisation.code_postal", 0, 2]},"nombre_bornes": {"$sum": 1}}},{"$sort": {"nombre_bornes": -1}},{"$limit": 1}], "cursor": {}};
+        */
+        const teslaQuery = "{ \"find\": \"modelofcars\", \"filter\": { \"marque\": \"Tesla\" } }";
+        const filterBorne = `{"aggregate": "modelofstations","pipeline": [{"$match": { "localisation.code_postal": 75 }},{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$match": { "bornes.type_de_prise": "Type1" }},{"$group": { "_id": "$_id" }}],"cursor": {}}`;
+        const q1 = '{ "find": "modelofcars",  "filter": { "batterie": { "$gt": 50 } },  "projection": { "marque": 1, "modele": 1 }}';
+        const q2 = '{ "aggregate": "modelofstations", "pipeline": [{ "$match": { "id_station": 1 } }, { "$lookup": { "from": "modelofbornes", "localField": "id_borne", "foreignField": "id_borne", "as": "bornes" } }, { "$unwind": "$bornes" }, { "$project": { "bornes": 1, "_id": 0 } }], "cursor": {} }';
+        const q3 = '{"aggregate": "modelofstations","pipeline": [{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$match": {"bornes.type_de_prise": {"$in": ["Type2", "combo CSS1"]}}},{"$group": {"_id": "$_id","station_id": {"$first": "$_id"},"nb_bornes": {"$first": "$nb_bornes"},"localisation": {"$first": "$localisation"},"horaire": {"$first": "$horaire"},"autoroute": {"$first": "$autoroute"},"bornes": {"$push": "$bornes"}}}],"cursor": {}}';
+        const q4 = '{"aggregate": "modelofstations","pipeline": [{"$match": {"localisation.code_postal": {"$in": [75, 77, 91, 92, 93, 94, 95]}}},{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$group": {"_id": "$_id","nombre_bornes": {"$sum": 1}}}], "cursor": {}}';
+        const q5 = '{"aggregate": "modelofstations","pipeline": [{"$lookup": {"from": "modelofbornes","localField": "id_borne","foreignField": "id_borne","as": "bornes"}},{"$unwind": "$bornes"},{"$group": {"_id": {"$substr": ["$localisation.code_postal", 0, 2]},"nombre_bornes": {"$sum": 1}}},{"$sort": {"nombre_bornes": -1}},{"$limit": 1}], "cursor": {}}';
+    </script>
 </body>
 </html>
